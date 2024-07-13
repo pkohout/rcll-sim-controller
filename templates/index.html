@@ -53,5 +53,11 @@
     <button onclick="callGet()">Get Points Last Game</button>
     <button onclick="callPost()">Start new Game</button>
     <button onclick="cancelGame()">Cancel Game</button>
+    <h1>Start Multiple Background Tasks</h1>
+    <form method="POST" action="{{ url_for('startMultiple') }}">
+        <label for="number">Number:</label>
+        <input type="number" id="number" name="number" min="1" required>
+        <button type="submit">Start Tasks</button>
+    </form>
 </body>
 </html>

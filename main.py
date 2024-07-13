@@ -4,7 +4,6 @@ import time
 from flask import Flask, request, jsonify, render_template
 import subprocess
 
-
 app = Flask(__name__)
 kube_config_file = "KUBECONFIG=/home/peter/.config/OpenLens/kubeconfigs/755af755-1473-49b0-8ba0-f9645e34f261"
 namespace_and_container_selection = "--namespace rcll --container refbox"
@@ -37,11 +36,22 @@ def cancel_game():
 
     return jsonify(action_result)
 
-@app.route('/start', methods=['POST'])
-def start():
-    thread = threading.Thread(target=start_new_games, args=(1,))
+@app.route('/start-multiple', methods=['POST'])
+def startMultiple():
+    number = request.form.get('number', type=int)
+    thread = threading.Thread(target=start_new_games, args=(number,))
     thread.start()
     # Perform some action with the data
+    action_result = {
+        'status': 'success',
+        'message': 'Start action has been initiated.',
+        'data_received': "Ok"
+    }
+
+    return jsonify(action_result)
+@app.route('/start', methods=['POST'])
+def start():
+    start_new_game()
     action_result = {
         'status': 'success',
         'message': 'Start action has been initiated.',
@@ -81,7 +91,7 @@ def start_new_games(amount):
         start_new_game()
         time.sleep(20 * 60) #game time
         time.sleep(120) #buffer time
-        print(f"Last game had: {get_points_last_game()} points!")
+        print(f"Last game had: {get_points_last_game(kube_config_file, namespace_and_container_selection)} points!")
 
 def start_new_game():
     p1 = subprocess.run(get_run_in_refbox_command("rcll-refbox-instruct -c GRIPS"), capture_output=True, text=True)
