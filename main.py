@@ -9,6 +9,8 @@ kube_config_file = "KUBECONFIG=/home/peter/.config/OpenLens/kubeconfigs/755af755
 namespace_and_container_selection = "--namespace rcll --container refbox"
 
 @app.route('/')
+@app.route('/index')
+@app.route('/index.html')
 def index():
     return render_template('index.html')
 
