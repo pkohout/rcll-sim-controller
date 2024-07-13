@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Example</title>
+    <script>
+        async function callGet() {
+            try {
+                const response = await fetch('/info');
+                const data = await response.json();
+                alert(JSON.stringify(data));
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function callPost() {
+            try {
+                const response = await fetch('/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({action: 'start'})
+                });
+                const data = await response.json();
+                alert(JSON.stringify(data));
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function cancelGame() {
+            try {
+                const response = await fetch('/cancel-game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({action: 'start'})
+                });
+                const data = await response.json();
+                alert(JSON.stringify(data));
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Flask Example</h1>
+    <button onclick="callGet()">Get Points Last Game</button>
+    <button onclick="callPost()">Start new Game</button>
+    <button onclick="cancelGame()">Cancel Game</button>
+</body>
+</html>
