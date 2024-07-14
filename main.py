@@ -34,7 +34,7 @@ def info():
         'status': 'success',
         'message': 'This is the info endpoint.',
         'data': {
-            'points': get_points_last_game(kube_config_file, namespace_and_container_selection),
+            'points': get_points_last_game(),
         }
     })
 
@@ -78,8 +78,9 @@ def start():
 
 def stop_all_pods():
     bash_line = kube_config_file + " kubectl delete pods --all --namespace rcll"
-    pod_name_cmd = ["/bin/bash", "-c", bash_line]
-    process = subprocess.run(pod_name_cmd, capture_output=True, text=True)
+    stop_pod_cmd = ["/bin/bash", "-c", bash_line]
+    log.info(f"Running: [{stop_pod_cmd}]")
+    process = subprocess.run(stop_pod_cmd, capture_output=True, text=True)
     if process.returncode != 0:
         raise Exception("Error stopping all pods!")
 
@@ -87,15 +88,17 @@ def stop_all_pods():
 def get_refbox_pod_name():
     bash_line = kube_config_file + " kubectl get pods --namespace rcll -l app=refbox -o custom-columns=\":metadata.name\" | grep refbox"
     pod_name_cmd = ["/bin/bash", "-c", bash_line]
+    log.info(f"Running: [{pod_name_cmd}]")
     process = subprocess.run(pod_name_cmd, capture_output=True, text=True)
     if process.returncode != 0:
         raise Exception("Error get_refbox_pod_name!")
     pod_name = str(process.stdout).strip()
     return pod_name
 
-def get_points_last_game(kube_config_file, namespace_and_container_selection):
+def get_points_last_game():
     commandPoints = ["/bin/bash", "-c",
                      kube_config_file + " kubectl logs " + get_refbox_pod_name() + " " + namespace_and_container_selection + "  | grep \"TOTAL POINTS\""]
+    log.info(f"Running: [{commandPoints}]")
     resultPoints = subprocess.run(commandPoints, capture_output=True, text=True)
     if resultPoints.returncode != 0:
         raise Exception("Error get_points_last_game!")
@@ -116,7 +119,7 @@ def start_new_games(amount):
         time.sleep(20 * 60) #game time
         log.info("Waiting 60s post game buffer time")
         time.sleep(60) #buffer time
-        log.info(f"Last game had: {get_points_last_game(kube_config_file, namespace_and_container_selection)} points!")
+        log.info(f"Last game had: {get_points_last_game()} points!")
 
 def start_new_game():
     p1 = subprocess.run(get_run_in_refbox_command("rcll-refbox-instruct -c GRIPS"), capture_output=True, text=True)
